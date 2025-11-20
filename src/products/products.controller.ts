@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import { Controller, Body } from '@nestjs/common';
+import { Controller, Body, ParseIntPipe } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
@@ -21,7 +21,7 @@ export class ProductsController {
   }
 
   @MessagePattern({ cmd: 'find_one_product' })
-  findOne(@Payload('id') id: number) {
+  findOne(@Payload('id', ParseIntPipe) id: number) {
     return this.productsService.findOne(id);
   }
 
@@ -31,7 +31,7 @@ export class ProductsController {
   }
 
   @MessagePattern({ cmd: 'remove_product' })
-  remove(@Payload('id') id: number) {
+  remove(@Payload('id', ParseIntPipe) id: number) {
     return this.productsService.remove(id);
   }
 }
