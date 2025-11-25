@@ -53,7 +53,7 @@ export class ProductsService extends PrismaClient implements OnModuleInit {
   }
 
   async update(id: number, updateProductDto: UpdateProductDto) {
-    const { id:_, ...data } = updateProductDto; // se ignora el id en el update renombrandolo a
+    const { id: _, ...data } = updateProductDto; // se ignora el id en el update renombrandolo a
     await this.findOne(id);
     return this.product.update({
       where: { id },
@@ -68,5 +68,16 @@ export class ProductsService extends PrismaClient implements OnModuleInit {
       data: { available: false },
     });
     return product;
+  }
+
+  async validateProducts(ids: number[]) {
+    ids = Array.from(new Set(ids)); // eliminar duplicados y crea un arreglo
+    const products = await this.product.findMany({
+      where: { id: { in: ids } },  // si al menos un id no existe en el arreglo arroja error
+    });
+    if (products.length !== ids.length) {
+      throw new RpcException({ status: HttpStatus.NOT_FOUND, message: `Some products not found` });
+    }
+    return products;
   }
 }
