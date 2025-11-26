@@ -9,10 +9,17 @@ import { PrismaClient } from 'generated/prisma/client';
 import { Logger } from '@nestjs/common';
 import { PaginationDto } from 'src/common/dto';
 import { RpcException } from '@nestjs/microservices';
+import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3';
 
 @Injectable()
 export class ProductsService extends PrismaClient implements OnModuleInit {
   private readonly logger = new Logger('ProductsService');
+
+  constructor() {
+    const adapter = new PrismaBetterSqlite3({ url: process.env.DATABASE_URL });
+    super({ adapter });
+  }
+
   async onModuleInit() {
     await this.$connect();
     this.logger.log('Database connected');
